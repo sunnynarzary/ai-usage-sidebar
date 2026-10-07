@@ -1,0 +1,129 @@
+{
+	"name": "ai-usage-sidebar",
+	"displayName": "AI Usage",
+	"description": "Claude, Codex and Cursor account usage in the sidebar.",
+	"version": "0.1.0",
+	"publisher": "sunnynarzary",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sunnynarzary/ai-usage-sidebar.git"
+	},
+	"bugs": {
+		"url": "https://github.com/sunnynarzary/ai-usage-sidebar/issues"
+	},
+	"engines": {
+		"vscode": "^1.95.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onView:aiUsage.dashboard",
+		"onCommand:aiUsage.refresh",
+		"onCommand:aiUsage.manageTools"
+	],
+	"main": "src/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "aiUsage",
+					"title": "AI Usage",
+					"icon": "media/usage.svg"
+				}
+			]
+		},
+		"views": {
+			"aiUsage": [
+				{
+					"id": "aiUsage.dashboard",
+					"name": "AI Usage",
+					"type": "webview"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "aiUsage.refresh",
+				"title": "AI Usage: Refresh"
+			},
+			{
+				"command": "aiUsage.manageTools",
+				"title": "AI Usage: Manage tools",
+				"icon": "$(settings-gear)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "aiUsage.manageTools",
+					"when": "view == aiUsage.dashboard",
+					"group": "navigation"
+				}
+			]
+		},
+		"configuration": {
+			"title": "AI Usage",
+			"properties": {
+				"aiUsage.cards.claude": {
+					"type": "string",
+					"enum": [
+						"auto",
+						"always",
+						"never"
+					],
+					"default": "auto",
+					"scope": "application",
+					"description": "Visibility for the claude card. Always does not grant consent; never revokes consent."
+				},
+				"aiUsage.cards.codex": {
+					"type": "string",
+					"enum": [
+						"auto",
+						"always",
+						"never"
+					],
+					"default": "auto",
+					"scope": "application",
+					"description": "Visibility for the codex card. Always does not grant consent; never revokes consent."
+				},
+				"aiUsage.cards.cursor": {
+					"type": "string",
+					"enum": [
+						"auto",
+						"always",
+						"never"
+					],
+					"default": "auto",
+					"scope": "application",
+					"description": "Visibility for the cursor card. Always does not grant consent; never revokes consent."
+				},
+				"aiUsage.cursor.source": {
+					"type": "string",
+					"enum": [
+						"ide",
+						"cursor-agent"
+					],
+					"default": "ide",
+					"scope": "application",
+					"description": "Which Cursor login to read. Each source requires separate consent."
+				}
+			}
+		}
+	},
+	"extensionKind": [
+		"ui"
+	],
+	"icon": "media/icon.png",
+	"scripts": {
+		"test": "node --test",
+		"package": "vsce package"
+	},
+	"devDependencies": {
+		"@vscode/vsce": "3.6.2"
+	},
+	"dependencies": {
+		"sql.js": "1.13.0"
+	}
+}

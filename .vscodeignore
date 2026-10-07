@@ -1,0 +1,17 @@
+.git/**
+.gitignore
+release/**
+test/**
+*.vsix
+package-lock.json
+node_modules/sql.js/.devcontainer/**
+node_modules/sql.js/.*
+node_modules/sql.js/AUTHORS
+node_modules/sql.js/CONTRIBUTING.md
+node_modules/sql.js/README.md
+node_modules/sql.js/documentation_index.md
+node_modules/sql.js/logo.svg
+node_modules/sql.js/dist/sql-asm*
+node_modules/sql.js/dist/sql-wasm-debug*
+node_modules/sql.js/dist/sqljs-*
+node_modules/sql.js/dist/worker*
