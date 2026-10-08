@@ -1,6 +1,6 @@
-# AI Usage
+# AI Usage Sidebar
 
-AI Usage shows Claude Code, Codex, and Cursor usage in a VS Code or Cursor sidebar. Each tool starts disabled. Open the **AI Usage** view and select **Enable** for the tool you want, or use **AI Usage: Manage tools**. Consent is stored locally in the editor's global extension state, separately for Cursor IDE and cursor-agent. Changing Cursor sources asks for consent again before reading the newly selected source. Manage tools can revoke consent. Setting a card to **never** also revokes consent and stops its reads; **always** changes visibility only and never grants consent. All extension settings have application scope.
+AI Usage Sidebar shows Claude Code, Codex, and Cursor usage in a VS Code or Cursor sidebar. Each tool starts disabled. Open the **AI Usage** view and select **Enable** for the tool you want, or use **AI Usage: Manage tools**. Consent is stored locally in the editor's global extension state, separately for Cursor IDE and cursor-agent. Changing Cursor sources asks for consent again before reading the newly selected source. Manage tools can revoke consent. Setting a card to **never** also revokes consent and stops its reads; **always** changes visibility only and never grants consent. All extension settings have application scope.
 
 Card visibility can be **auto** (default), **always**, or **never**. Auto hides a card only when a local login is positively absent. On a fresh install, each tool shows a compact enable row. Refresh runs only for enabled tools while the view is open.
 
