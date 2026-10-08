@@ -46,3 +46,26 @@ test('progress bars turn warning at 80% and error at 100%', () => {
   assert.match(css,/\.progress-bar\.high\s*\{[^}]*editorWarning-foreground/);
   assert.match(css,/\.progress-bar\.full\s*\{[^}]*errorForeground/);
 });
+
+test('reset times use days when at least a day away', () => {
+  const elements = new Map(); let onMessage;
+  class Element {
+    constructor() { this.children=[]; this.classList={toggle:()=>{}}; this.textContent=''; this.style={}; this.attrs={}; }
+    setAttribute(k,v) { this.attrs[k]=v; }
+    addEventListener() {}
+    append(...items) { this.children.push(...items); }
+    replaceChildren(...items) { this.children=items; }
+  }
+  const document={getElementById:id=>{if (!elements.has(id)) elements.set(id,new Element());return elements.get(id)},createElement:()=>new Element()};
+  const window={addEventListener:(event,handler)=>{if(event==='message') onMessage=handler}};
+  const now=Date.UTC(2026,9,8,12,0,0); const RealDate=Date;
+  const FakeDate=class extends RealDate { static now() { return now; } };
+  const script=fs.readFileSync(path.join(__dirname,'..','media','dashboard.js'),'utf8');
+  vm.runInNewContext(script,{document,window,Date:FakeDate,Math,String,acquireVsCodeApi:()=>({postMessage:()=>{}}),setInterval:()=>{}});
+  const at=sec=>(now/1000)+sec;
+  onMessage({data:{type:'state',claude:{visible:true,title:'Claude',state:'ready',plan:'',updatedAt:now,notes:[],rows:[
+    {label:'a',used:1,resetsAt:at(30)},{label:'b',used:1,resetsAt:at(45*60)},{label:'c',used:1,resetsAt:at(3*3600+57*60)},
+    {label:'d',used:1,resetsAt:at(18*3600+27*60)},{label:'e',used:1,resetsAt:at(141*3600+34*60)},{label:'f',used:1,resetsAt:at(573*3600+4*60)}]},codex:{visible:false},cursor:{visible:false}}});
+  const resets=elements.get('claude-usage').children.map(row=>row.children.filter(c=>c.className==='reset-time').map(c=>c.textContent).pop());
+  assert.deepEqual(resets,['Resets in less than 1m','Resets in 45m','Resets in 3h 57m','Resets in 18h 27m','Resets in 5d 21h','Resets in 23d 21h']);
+});
