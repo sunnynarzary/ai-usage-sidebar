@@ -14,7 +14,7 @@ const MESSAGES = Object.freeze({
 });
 const EXTRA_MESSAGES = new Set(['Cursor login not readable in this editor version.', 'cursor-agent login is unavailable on this platform.', 'Codex CLI was not found.', 'Open Cursor to refresh your login.']);
 const PUBLIC_LABELS = new Set(['Session (5hr)', 'Weekly (7 day)', 'Model usage', 'Extra usage', 'Included usage', 'Auto models', 'API models', 'Team on-demand', 'On-demand', 'Session', 'Weekly', 'Spend limit']);
-const PUBLIC_MODELS = /^(?:Claude )?(?:Opus|Sonnet|Haiku)(?: [0-9](?:\.[0-9])?)?$/;
+const PUBLIC_MODELS = /^(?:Claude )?(?:Fable|Opus|Sonnet|Haiku)(?: [0-9]{1,3}(?:\.[0-9]{1,3})?)?$/;
 const PUBLIC_PLANS = new Set(['Free', 'Pro', 'Pro Plus', 'Ultra', 'Teams', 'Enterprise', 'Plus', 'Business', 'Edu']);
 const PUBLIC_NOTES = new Set(['Extra usage limit reached.']);
 class ProviderError extends Error { constructor(state, message) { super(message || MESSAGES[state]); this.state = state; } }
@@ -34,8 +34,10 @@ function dollars(value) { const n = Number(value); return Number.isSafeInteger(n
 function claudeMoney(value) { const minor = Number(value?.amount_minor), exponent = Number(value?.exponent); return Number.isSafeInteger(minor) && minor >= 0 && minor <= 1e11 && Number.isInteger(exponent) && exponent >= 0 && exponent <= 4 ? dollars(Math.round(minor * 100 / 10 ** exponent)) : null; }
 function normalizeClaude(data) {
   const rows = (Array.isArray(data?.limits) ? data.limits : []).map((limit) => {
-    const model = limit.scope?.model?.display_name;
-    const label = limit.kind === 'session' ? 'Session (5hr)' : limit.kind === 'weekly_all' ? 'Weekly (7 day)' : typeof model === 'string' && PUBLIC_MODELS.test(model) ? `${model} (7 day)` : 'Model usage';
+    const displayName = limit.scope?.model?.display_name;
+    const surface = limit.scope?.surface;
+    const model = [displayName, surface].find(value => typeof value === 'string' && PUBLIC_MODELS.test(value));
+    const label = limit.kind === 'session' ? 'Session (5hr)' : limit.kind === 'weekly_all' ? 'Weekly (7 day)' : model ? `${model} (7 day)` : 'Model usage';
     return row(label, limit.percent, Date.parse(limit.resets_at) / 1000);
   });
   const spend = data?.spend;

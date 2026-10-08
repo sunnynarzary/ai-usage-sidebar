@@ -139,6 +139,28 @@ test('Claude model, spend, Cursor spend, and Codex plan survive public projectio
   assert.equal(JSON.stringify(core.publicReady({rows:[{label:canary,used:1,detail:canary},{label:'Extra usage',detail:canary}],plan:canary})).includes(canary),false);
 });
 
+test('Claude model labels use original display name and surface fields without exposing vendor text', () => {
+  const canary='CANARY_VENDOR_TEXT';
+  const limits=[
+    {kind:'session',scope:{model:{display_name:'Fable'}},percent:1},
+    {kind:'weekly_all',scope:{model:{display_name:'Opus'}},percent:2},
+    {kind:'weekly_model',scope:{model:{display_name:'Fable'}},percent:3},
+    {kind:'weekly_model',scope:{model:{display_name:'Claude Opus 4.1'}},percent:4},
+    {kind:'weekly_model',scope:{model:{display_name:'Sonnet'}},percent:5},
+    {kind:'weekly_model',scope:{surface:'Claude Fable 4.5'},percent:6},
+    {kind:'weekly_model',scope:{model:{display_name:canary},surface:'Opus'},percent:7},
+    {kind:'weekly_model',scope:{model:{display_name:`Sonnet ${canary}`},surface:canary},percent:8}
+  ];
+  const result=core.publicReady(core.normalizeClaude({limits}));
+  assert.deepEqual(result.rows.map(r=>r.label),[
+    'Session (5hr)','Weekly (7 day)','Fable (7 day)','Claude Opus 4.1 (7 day)',
+    'Sonnet (7 day)','Claude Fable 4.5 (7 day)','Opus (7 day)','Model usage'
+  ]);
+  assert.equal(JSON.stringify(result).includes(canary),false);
+  const direct=core.publicReady({rows:[{label:`${canary} (7 day)`,used:10}]});
+  assert.deepEqual(direct.rows,[]);
+});
+
 test('aborted Claude and Cursor reads make no later credential or vendor call', async () => {
   const controller=new AbortController(); let fetches=0;
   let release; const pending=new Promise(resolve=>{release=resolve});

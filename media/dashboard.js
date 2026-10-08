@@ -43,9 +43,11 @@ function relative(ms) { if (!ms) return 'just now'; const minutes = Math.max(0,M
 function relativeReset(seconds) { return formatSpan(seconds*1000-Date.now()); }
 function formatSpan(ms) {
   if (ms < 60000) return 'less than 1m';
-  const minutes = Math.ceil(ms/60000);
-  if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes/60);
-  if (hours < 24) return `${hours}h ${minutes%60}m`;
-  return `${Math.floor(hours/24)}d ${hours%24}h`;
+  if (ms < 3600000) return `${Math.min(59, Math.ceil(ms/60000))}m`;
+  if (ms < 86400000) {
+    const hours = Math.floor(ms/3600000);
+    return `${hours}h ${Math.min(59, Math.ceil((ms%3600000)/60000))}m`;
+  }
+  const days = Math.floor(ms/86400000);
+  return `${days}d ${Math.floor((ms%86400000)/3600000)}h`;
 }
