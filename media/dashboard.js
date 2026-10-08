@@ -28,7 +28,12 @@ function makeRow(item) {
   const head = document.createElement('div'); head.className = 'usage-heading';
   const label = document.createElement('span'); label.textContent = item.label || 'Usage';
   const pct = document.createElement('span'); pct.textContent = `${Math.round(item.used || 0)}%`; head.append(label,pct);
-  const track = document.createElement('progress'); track.max = 100; track.value = Math.max(0,Math.min(100,item.used || 0)); track.className = `usage-progress${track.value >= 100 ? ' full' : track.value >= 80 ? ' high' : ''}`;
+  const value = Math.max(0,Math.min(100,item.used || 0));
+  const track = document.createElement('div'); track.className = 'progress-track';
+  track.setAttribute('role','progressbar'); track.setAttribute('aria-label',item.label || 'Usage');
+  track.setAttribute('aria-valuemin','0'); track.setAttribute('aria-valuemax','100'); track.setAttribute('aria-valuenow',String(Math.round(value)));
+  const bar = document.createElement('div'); bar.className = `progress-bar${value >= 100 ? ' full' : value >= 80 ? ' high' : ''}`; bar.style.width = `${value}%`;
+  track.append(bar);
   wrap.append(head,track);
   if (item.detail) { const detail = document.createElement('div'); detail.className = 'reset-time'; detail.textContent = item.detail; wrap.append(detail); }
   if (item.resetsAt) { const reset = document.createElement('div'); reset.className = 'reset-time'; reset.textContent = `Resets in ${relativeReset(item.resetsAt)}`; wrap.append(reset); }
