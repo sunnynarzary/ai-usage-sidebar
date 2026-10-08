@@ -2,7 +2,7 @@
 	"name": "ai-usage-sidebar",
 	"displayName": "AI Usage Sidebar",
 	"description": "Claude, Codex and Cursor account usage in the sidebar.",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"publisher": "sunnynarzary",
 	"license": "MIT",
 	"repository": {
